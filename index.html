@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Видеоплеер для Мамы</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono&display=swap">
+    <style>
+        :root {
+            --primary-color: #ff4d4d;
+            --primary-hover: #ff3333;
+            --dark-bg: #0f0f0f;
+            --dark-bg-2: #181818;
+            --dark-bg-3: #232323;
+            --light-text: #ffffff;
+            --light-text-2: rgba(255, 255, 255, 0.8);
+            --light-text-3: rgba(255, 255, 255, 0.6);
+            --controls-bg: rgba(28, 28, 28, 0.9);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Roboto', Arial, sans-serif;
+            color: var(--light-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Login Page */
+        #login {
+            background: var(--dark-bg-2);
+            padding: 2.5rem 3rem;
+            border-radius: var(--border-radius);
+            margin: auto;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+            transition: var(--transition);
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        #login.hidden {
+            transform: translateY(-20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .login-header p {
+            color: var(--light-text-3);
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light-text);
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.2);
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 20px;
+            top: 14px;
+            color: var(--light-text-3);
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .input-group input:focus+label,
+        .input-group input:not(:placeholder-shown)+label {
+            transform: translateY(-30px) scale(0.8);
+            color: var(--primary-color);
+        }
+
+        .input-group input::placeholder {
+            color: transparent;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: var(--light-text);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            display: block;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3);
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 77, 77, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.3);
+        }
+
+        /* Video Page */
+        #videoPage {
+            width: 100%;
+            max-width: 1280px;
+            padding: 20px;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        #videoPage.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .page-header {
+            text-align: center;
+            margin: 0 auto 30px;
+            padding: 16px;
+            background: transparent;
+            border-radius: var(--border-radius);
+            width: fit-content;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, var(--primary-color), #ff9999);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-header p {
+            color: var(--light-text-3);
+            font-size: 1rem;
+        }
+
+        .video-source-container {
+            background: var(--dark-bg-2);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .source-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .source-option {
+            flex: 1;
+            padding: 15px;
+            background: var(--dark-bg-3);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .source-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .source-option.active {
+            border-color: var(--primary-color);
+            background: rgba(255, 77, 77, 0.1);
+        }
+
+        .source-option svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 8px;
+            fill: var(--light-text-2);
+        }
+
+        .source-option.active svg {
+            fill: var(--primary-color);
+        }
+
+        .source-option h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .source-inputs {
+            display: none;
+        }
+
+        .source-inputs.active {
+            display: block;
+        }
+
+        .url-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .url-input input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .url-input input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .url-input button {
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: var(--light-text);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .url-input button:hover {
+            background: var(--primary-hover);
+        }
+
+        .file-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-input:hover {
+            border-color: var(--primary-color);
+            background: rgba(255, 77, 77, 0.05);
+        }
+
+        .file-input svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 15px;
+            fill: var(--light-text-3);
+        }
+
+        .file-input p {
+            color: var(--light-text-2);
+            margin-bottom: 5px;
+        }
+
+        .file-input span {
+            color: var(--light-text-3);
+            font-size: 0.8rem;
+        }
+
+        .file-input input {
+            display: none;
+        }
+
+        /* Video Player */
+        #videoContainer {
+            position: relative;
+            background: #000;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            transition: var(--transition);
+            aspect-ratio: 16/9;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            background: #000;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--controls-bg);
+            padding: 15px 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        #videoContainer:hover #controls,
+        #controls:focus-within,
+        #controls.active {
+            opacity: 1;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            margin-bottom: 12px;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        #progress {
+            width: 0;
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 3px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        #progressBuffer {
+            width: 0;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        #progressHandle {
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 0;
+            pointer-events: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .progress-container:hover #progressHandle {
+            opacity: 1;
+        }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 12px;
+        }
+
+        .left-controls,
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--light-text);
+            cursor: pointer;
+            padding: 6px;
+            transition: var(--transition);
+            display: grid;
+            place-items: center;
+            border-radius: 5px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            display: block;
+            fill: currentColor;
+        }
+
+        #volumeContainer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        #volumeSlider {
+            width: 0;
+            max-width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            position: relative;
+            overflow: visible;
+            transition: width 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        #volumeContainer:hover #volumeSlider,
+        #volumeSlider:focus-within {
+            width: 100px;
+            opacity: 1;
+        }
+
+        #volumeLevel {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background: var(--primary-color);
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        #volumeHandle {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translate(50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: var(--light-text);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        #time {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 13px;
+            color: var(--light-text-2);
+            min-width: 110px;
+        }
+
+        /* Settings Panel */
+        #settingsPanel {
+            position: absolute;
+            bottom: 70px;
+            right: 20px;
+            background: var(--controls-bg);
+            border-radius: var(--border-radius);
+            width: 280px;
+            padding: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            transform-origin: bottom right;
+            transform: scale(0.95);
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+            z-index: 10;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        #settingsPanel.active {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-header h3 {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .settings-header button {
+            background: none;
+            border: none;
+            color: var(--light-text-3);
+            cursor: pointer;
+            padding: 5px;
+            transition: var(--transition);
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+        }
+
+        .settings-header button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light-text);
+        }
+
+        .settings-section {
+            margin-bottom: 15px;
+        }
+
+        .settings-section h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--light-text-2);
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .settings-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-option.active {
+            background: rgba(255, 77, 77, 0.2);
+        }
+
+        .settings-option span {
+            font-size: 13px;
+        }
+
+        .settings-option .value {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .speed-options,
+        .quality-options,
+        .aspect-options,
+        .audio-track-options {
+            display: none;
+            padding: 5px 0;
+        }
+
+        .speed-options.active,
+        .quality-options.active,
+        .aspect-options.active,
+        .audio-track-options.active {
+            display: block;
+        }
+
+        .speed-option,
+        .quality-option,
+        .aspect-option,
+        .audio-track-option {
+            padding: 8px 15px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 6px;
+        }
+
+        .speed-option:hover,
+        .quality-option:hover,
+        .aspect-option:hover,
+        .audio-track-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .speed-option.active,
+        .quality-option.active,
+        .aspect-option.active,
+        .audio-track-option.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Slider controls for settings */
+        .slider-control {
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .slider-control-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .slider-control-header span {
+            font-size: 13px;
+        }
+
+        .slider-control-header .value {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .slider-control-track {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .slider-control-level {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            background: var(--primary-color);
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        .slider-control-handle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: var(--light-text);
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Keyboard shortcuts panel */
+        .keyboard-shortcuts {
+            margin-top: 10px;
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 12px;
+        }
+
+        .shortcut-key {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Notification */
+        #notification {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--controls-bg);
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: var(--light-text);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        #notification.active {
+            opacity: 1;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .source-options {
+                flex-direction: column;
+            }
+
+            #controls {
+                padding: 10px 15px;
+            }
+
+            .left-controls,
+            .right-controls {
+                gap: 10px;
+            }
+
+            .control-btn {
+                padding: 4px;
+            }
+
+            .icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            #time {
+                font-size: 12px;
+                min-width: 90px;
+            }
+
+            #settingsPanel {
+                width: 240px;
+                bottom: 60px;
+                right: 10px;
+            }
+
+            .url-input {
+                flex-direction: column;
+            }
+
+            .url-input button {
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            #login {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.2rem;
+            }
+
+            .page-header p {
+                font-size: 0.8rem;
+            }
+
+            #controls {
+                padding: 8px 10px;
+            }
+
+            .left-controls,
+            .right-controls {
+                gap: 5px;
+            }
+
+            .control-btn {
+                padding: 3px;
+            }
+
+            .icon {
+                width: 18px;
+                height: 18px;
+            }
+
+            #time {
+                font-size: 10px;
+                min-width: 70px;
+            }
+
+            #settingsPanel {
+                width: 200px;
+                bottom: 50px;
+                right: 5px;
+            }
+
+            .settings-option span,
+            .speed-option,
+            .quality-option {
+                font-size: 12px;
+            }
+        }
+
+        /* Для очень маленьких экранов скрываем некоторые элементы */
+        @media (max-width: 360px) {
+
+            .control-btn.skip-btn,
+            #time {
+                display: none;
+            }
+
+            .left-controls,
+            .right-controls {
+                gap: 3px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="login">
+        <div class="login-header">
+            <h2>Видеоплеер для Мамы</h2>
+            <p>Пожалуйста, войдите в систему</p>
+        </div>
+        <div class="input-group">
+            <input type="text" id="username" placeholder=" ">
+            <label for="username">Логин</label>
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder=" ">
+            <label for="password">Пароль</label>
+        </div>
+        <button class="btn" onclick="authenticate()">Войти</button>
+    </div>
+
+    <div id="videoPage">
+        <div class="page-header">
+            <h1>❤️ Премиум Видеоплеер для Мамы ❤️</h1>
+            <p>Выберите видео и наслаждайтесь просмотром</p>
+        </div>
+
+        <div class="video-source-container">
+            <div class="source-options">
+                <div class="source-option active" data-source="url">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z">
+                        </path>
+                    </svg>
+                    <h3>По ссылке</h3>
+                </div>
+                <div class="source-option" data-source="file">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z">
+                        </path>
+                    </svg>
+                    <h3>С компьютера</h3>
+                </div>
+            </div>
+
+            <div class="source-inputs active" data-input="url">
+                <div class="url-input">
+                    <input type="text" id="videoUrl" placeholder="Вставьте ссылку на видео">
+                    <button id="loadUrlBtn">Загрузить</button>
+                </div>
+            </div>
+
+            <div class="source-inputs" data-input="file">
+                <div class="file-input" id="fileInputContainer">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z">
+                        </path>
+                    </svg>
+                    <p>Перетащите видео сюда или нажмите для выбора</p>
+                    <span>Поддерживаемые форматы: MP4, WebM, OGG</span>
+                    <input type="file" id="videoFile" accept="video/*">
+                </div>
+            </div>
+        </div>
+
+        <div id="videoContainer">
+            <video id="video" preload="metadata">
+                <source src="" type="video/mp4">
+                Ваш браузер не поддерживает видео тег.
+            </video>
+            <div class="loading-spinner"></div>
+            <div id="notification">Сообщение</div>
+
+            <div id="controls">
+                <div class="progress-container" id="progressContainer">
+                    <div id="progressBuffer"></div>
+                    <div id="progress"></div>
+                    <div id="progressHandle"></div>
+                </div>
+
+                <div class="controls-row">
+                    <div class="left-controls">
+                        <button id="playPause" class="control-btn" title="Воспроизвести/Пауза">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                        </button>
+                        <button id="skipBack" class="control-btn skip-btn" title="Назад 10 секунд">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8zm-1.1 11h-.85v-3.26l-1.01.31v-.69l1.77-.63h.09V16z" />
+                            </svg>
+                        </button>
+                        <button id="skipForward" class="control-btn skip-btn" title="Вперед 10 секунд">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M18 13c0 3.31-2.69 6-6 6s-6-2.69-6-6 2.69-6 6-6v4l5-5-5-5v4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8h-2zm-7.46 2.22c-.06.05-.12.09-.2.12-.08.03-.17.04-.27.04-.09 0-.17-.01-.25-.04-.08-.03-.14-.07-.2-.12-.05-.05-.1-.12-.13-.2-.03-.08-.05-.16-.05-.25s.02-.17.05-.25c.03-.08.07-.14.13-.2.05-.05.12-.09.2-.12.08-.03.16-.04.25-.04s.17.01.25.04c.08.03.15.07.2.12.05.05.1.12.13.2.03.08.05.16.05.25s-.02.17-.05.25c-.03.08-.07.15-.13.2z" />
+                            </svg>
+                        </button>
+                        <div id="volumeContainer">
+                            <button id="volumeBtn" class="control-btn" title="Громкость">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path
+                                        d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                                </svg>
+                            </button>
+                            <div id="volumeSlider">
+                                <div id="volumeLevel"></div>
+                                <div id="volumeHandle"></div>
+                            </div>
+                        </div>
+                        <span id="time">0:00 / 0:00</span>
+                    </div>
+
+                    <div class="right-controls">
+                        <button id="pipBtn" class="control-btn" title="Картинка в картинке">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z" />
+                            </svg>
+                        </button>
+                        <button id="settingsBtn" class="control-btn" title="Настройки">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+                            </svg>
+                        </button>
+                        <button id="fullscreen" class="control-btn" title="Полный экран">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settingsPanel">
+                <div class="settings-header">
+                    <h3>Настройки</h3>
+                    <button id="closeSettings">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path
+                                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="settings-section">
+                    <h4>Скорость воспроизведения</h4>
+                    <div class="settings-option" id="speedOption">
+                        <span>Скорость</span>
+                        <span class="value" id="currentSpeed">1x</span>
+                    </div>
+                    <div class="speed-options" id="speedOptions">
+                        <div class="speed-option" data-speed="0.25">0.25x</div>
+                        <div class="speed-option" data-speed="0.5">0.5x</div>
+                        <div class="speed-option" data-speed="0.75">0.75x</div>
+                        <div class="speed-option active" data-speed="1">1x</div>
+                        <div class="speed-option" data-speed="1.25">1.25x</div>
+                        <div class="speed-option" data-speed="1.5">1.5x</div>
+                        <div class="speed-option" data-speed="1.75">1.75x</div>
+                        <div class="speed-option" data-speed="2">2x</div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4>Качество видео</h4>
+                    <div class="settings-option" id="qualityOption">
+                        <span>Качество</span>
+                        <span class="value" id="currentQuality">Авто</span>
+                    </div>
+                    <div class="quality-options" id="qualityOptions">
+                        <div class="quality-option active" data-quality="auto">Авто</div>
+                        <div class="quality-option" data-quality="1080p">1080p</div>
+                        <div class="quality-option" data-quality="720p">720p</div>
+                        <div class="quality-option" data-quality="480p">480p</div>
+                        <div class="quality-option" data-quality="360p">360p</div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4>Соотношение сторон</h4>
+                    <div class="settings-option" id="aspectOption">
+                        <span>Соотношение</span>
+                        <span class="value" id="currentAspect">Авто</span>
+                    </div>
+                    <div class="aspect-options" id="aspectOptions">
+                        <div class="aspect-option active" data-aspect="auto">Авто</div>
+                        <div class="aspect-option" data-aspect="contain">Вписать</div>
+                        <div class="aspect-option" data-aspect="cover">Заполнить</div>
+                        <div class="aspect-option" data-aspect="16:9">16:9</div>
+                        <div class="aspect-option" data-aspect="4:3">4:3</div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4>Аудиодорожка</h4>
+                    <div class="settings-option" id="audioTrackOption">
+                        <span>Аудиодорожка</span>
+                        <span class="value" id="currentAudioTrack">По умолчанию</span>
+                    </div>
+                    <div class="audio-track-options" id="audioTrackOptions">
+                        <div class="audio-track-option active" data-track="default">По умолчанию</div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4>Настройки изображения</h4>
+                    <div class="slider-control">
+                        <div class="slider-control-header">
+                            <span>Яркость</span>
+                            <span class="value" id="brightnessValue">100%</span>
+                        </div>
+                        <div class="slider-control-track" id="brightnessSlider">
+                            <div class="slider-control-level" id="brightnessLevel"></div>
+                            <div class="slider-control-handle" id="brightnessHandle"></div>
+                        </div>
+                    </div>
+                    <div class="slider-control">
+                        <div class="slider-control-header">
+                            <span>Контрастность</span>
+                            <span class="value" id="contrastValue">100%</span>
+                        </div>
+                        <div class="slider-control-track" id="contrastSlider">
+                            <div class="slider-control-level" id="contrastLevel"></div>
+                            <div class="slider-control-handle" id="contrastHandle"></div>
+                        </div>
+                    </div>
+                    <div class="slider-control">
+                        <div class="slider-control-header">
+                            <span>Насыщенность</span>
+                            <span class="value" id="saturationValue">100%</span>
+                        </div>
+                        <div class="slider-control-track" id="saturationSlider">
+                            <div class="slider-control-level" id="saturationLevel"></div>
+                            <div class="slider-control-handle" id="saturationHandle"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4>Дополнительно</h4>
+                    <div class="settings-option" id="loopOption">
+                        <span>Повторять видео</span>
+                        <span class="value" id="loopStatus">Выкл</span>
+                    </div>
+                    <div class="settings-option" id="autoplayOption">
+                        <span>Автовоспроизведение</span>
+                        <span class="value" id="autoplayStatus">Вкл</span>
+                    </div>
+                    <div class="settings-option" id="subtitlesOption">
+                        <span>Субтитры</span>
+                        <span class="value" id="subtitlesStatus">Выкл</span>
+                    </div>
+                    <div class="settings-option" id="pipOption">
+                        <span>Картинка в картинке</span>
+                        <span class="value">Вкл/Выкл</span>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4>Горячие клавиши</h4>
+                    <div class="keyboard-shortcuts">
+                        <div class="shortcut-item">
+                            <span>Воспроизведение/Пауза</span>
+                            <span class="shortcut-key">Пробел</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Вперед 10 сек</span>
+                            <span class="shortcut-key">→</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Назад 10 сек</span>
+                            <span class="shortcut-key">←</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Громкость +</span>
+                            <span class="shortcut-key">↑</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Громкость -</span>
+                            <span class="shortcut-key">↓</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Полный экран</span>
+                            <span class="shortcut-key">F</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Отключить звук</span>
+                            <span class="shortcut-key">M</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Картинка в картинке</span>
+                            <span class="shortcut-key">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Константы для авторизации
+        const correctUsername = "mama";
+        const correctPassword = "mamaIsTheBest";
+
+        // Элементы DOM
+        const loginForm = document.getElementById("login");
+        const videoPage = document.getElementById("videoPage");
+        const video = document.getElementById("video");
+        const playPauseBtn = document.getElementById("playPause");
+        const skipBackBtn = document.getElementById("skipBack");
+        const skipForwardBtn = document.getElementById("skipForward");
+        const volumeBtn = document.getElementById("volumeBtn");
+        const volumeSlider = document.getElementById("volumeSlider");
+        const volumeLevel = document.getElementById("volumeLevel");
+        const volumeHandle = document.getElementById("volumeHandle");
+        const progressContainer = document.getElementById("progressContainer");
+        const progress = document.getElementById("progress");
+        const progressBuffer = document.getElementById("progressBuffer");
+        const progressHandle = document.getElementById("progressHandle");
+        const timeDisplay = document.getElementById("time");
+        const fullscreenBtn = document.getElementById("fullscreen");
+        const pipBtn = document.getElementById("pipBtn");
+        const spinner = document.querySelector(".loading-spinner");
+        const settingsBtn = document.getElementById("settingsBtn");
+        const settingsPanel = document.getElementById("settingsPanel");
+        const closeSettings = document.getElementById("closeSettings");
+        const speedOption = document.getElementById("speedOption");
+        const speedOptions = document.getElementById("speedOptions");
+        const qualityOption = document.getElementById("qualityOption");
+        const qualityOptions = document.getElementById("qualityOptions");
+        const aspectOption = document.getElementById("aspectOption");
+        const aspectOptions = document.getElementById("aspectOptions");
+        const audioTrackOption = document.getElementById("audioTrackOption");
+        const audioTrackOptions = document.getElementById("audioTrackOptions");
+        const loopOption = document.getElementById("loopOption");
+        const autoplayOption = document.getElementById("autoplayOption");
+        const subtitlesOption = document.getElementById("subtitlesOption");
+        const pipOption = document.getElementById("pipOption");
+        const sourceOptions = document.querySelectorAll(".source-option");
+        const sourceInputs = document.querySelectorAll(".source-inputs");
+        const videoUrlInput = document.getElementById("videoUrl");
+        const loadUrlBtn = document.getElementById("loadUrlBtn");
+        const fileInputContainer = document.getElementById("fileInputContainer");
+        const videoFileInput = document.getElementById("videoFile");
+        const notification = document.getElementById("notification");
+        const brightnessSlider = document.getElementById("brightnessSlider");
+        const contrastSlider = document.getElementById("contrastSlider");
+        const saturationSlider = document.getElementById("saturationSlider");
+
+        // Переменные состояния
+        let isDraggingProgress = false;
+        let isDraggingVolume = false;
+        let isDraggingBrightness = false;
+        let isDraggingContrast = false;
+        let isDraggingSaturation = false;
+        let isSettingsOpen = false;
+        let currentVideoUrl = "";
+        let videoLoaded = false;
+        let brightness = 100;
+        let contrast = 100;
+        let saturation = 100;
+
+        // Функция авторизации
+        function authenticate() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (username === correctUsername && password === correctPassword) {
+                loginForm.classList.add("hidden");
+                setTimeout(() => {
+                    videoPage.style.display = "block";
+                    setTimeout(() => {
+                        videoPage.classList.add("visible");
+                    }, 50);
+                }, 300);
+
+                initializePlayer();
+            } else {
+                alert("Неверные данные! Попробуйте снова");
+                document.getElementById("username").focus();
+            }
+        }
+
+        // Инициализация плеера
+        function initializePlayer() {
+            // Загрузка сохраненных настроек
+            loadSavedSettings();
+
+            // Обработчики событий для видео
+            video.addEventListener('waiting', () => spinner.style.display = 'block');
+            video.addEventListener('canplay', () => spinner.style.display = 'none');
+            video.addEventListener('playing', () => spinner.style.display = 'none');
+            video.addEventListener('ended', handleVideoEnd);
+            video.addEventListener('loadedmetadata', handleVideoMetadata);
+            video.addEventListener('timeupdate', updateVideoProgress);
+            video.addEventListener('progress', updateBufferProgress);
+            video.addEventListener('error', handleVideoError);
+
+            // Обработчики для элементов управления
+            playPauseBtn.addEventListener('click', togglePlay);
+            video.addEventListener('click', togglePlay);
+
+            skipBackBtn.addEventListener('click', () => skipTime(-10));
+            skipForwardBtn.addEventListener('click', () => skipTime(10));
+
+            volumeBtn.addEventListener('click', toggleMute);
+            volumeSlider.addEventListener('mousedown', startVolumeChange);
+            document.addEventListener('mousemove', changeVolume);
+            document.addEventListener('mouseup', stopVolumeChange);
+
+            progressContainer.addEventListener('mousedown', startProgressChange);
+            document.addEventListener('mousemove', changeProgress);
+            document.addEventListener('mouseup', stopProgressChange);
+
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+            pipBtn.addEventListener('click', togglePictureInPicture);
+
+            // Обработчики для настроек
+            settingsBtn.addEventListener('click', toggleSettings);
+            closeSettings.addEventListener('click', closeSettingsPanel);
+            document.addEventListener('click', handleOutsideClick);
+
+            speedOption.addEventListener('click', toggleSpeedOptions);
+            qualityOption.addEventListener('click', toggleQualityOptions);
+            aspectOption.addEventListener('click', toggleAspectOptions);
+            audioTrackOption.addEventListener('click', toggleAudioTrackOptions);
+
+            document.querySelectorAll('.speed-option').forEach(option => {
+                option.addEventListener('click', changeSpeed);
+            });
+
+            document.querySelectorAll('.quality-option').forEach(option => {
+                option.addEventListener('click', changeQuality);
+            });
+
+            document.querySelectorAll('.aspect-option').forEach(option => {
+                option.addEventListener('click', changeAspect);
+            });
+
+            document.querySelectorAll('.audio-track-option').forEach(option => {
+                option.addEventListener('click', changeAudioTrack);
+            });
+
+            loopOption.addEventListener('click', toggleLoop);
+            autoplayOption.addEventListener('click', toggleAutoplay);
+            subtitlesOption.addEventListener('click', toggleSubtitles);
+            pipOption.addEventListener('click', togglePictureInPicture);
+
+            // Обработчики для слайдеров настроек изображения
+            brightnessSlider.addEventListener('mousedown', startBrightnessChange);
+            contrastSlider.addEventListener('mousedown', startContrastChange);
+            saturationSlider.addEventListener('mousedown', startSaturationChange);
+            document.addEventListener('mousemove', changeImageSettings);
+            document.addEventListener('mouseup', stopImageSettingsChange);
+
+            // Обработчики для выбора источника видео
+            sourceOptions.forEach(option => {
+                option.addEventListener('click', changeVideoSource);
+            });
+
+            loadUrlBtn.addEventListener('click', loadVideoFromUrl);
+
+            fileInputContainer.addEventListener('click', () => {
+                videoFileInput.click();
+            });
+
+            fileInputContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileInputContainer.style.borderColor = 'var(--primary-color)';
+                fileInputContainer.style.background = 'rgba(255, 77, 77, 0.1)';
+            });
+
+            fileInputContainer.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                fileInputContainer.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                fileInputContainer.style.background = 'transparent';
+            });
+
+            fileInputContainer.addEventListener('drop', handleFileDrop);
+
+            videoFileInput.addEventListener('change', handleFileSelect);
+
+            // Обработчики клавиатуры
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+        }
+
+        // Обработка ошибок видео - исправленная функция
+        function handleVideoError() {
+            // Убираем вывод объекта события в консоль, так как это вызывает ошибку
+            spinner.style.display = 'none';
+
+            let errorMessage = "Ошибка при загрузке видео";
+
+            if (video.error) {
+                switch (video.error.code) {
+                    case 1: // MEDIA_ERR_ABORTED
+                        errorMessage = "Загрузка видео была прервана";
+                        break;
+                    case 2: // MEDIA_ERR_NETWORK
+                        errorMessage = "Ошибка сети при загрузке видео";
+                        break;
+                    case 3: // MEDIA_ERR_DECODE
+                        errorMessage = "Ошибка декодирования видео";
+                        break;
+                    case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+                        errorMessage = "Формат видео не поддерживается";
+                        break;
+                }
+            }
+
+            showNotification(errorMessage);
+            videoLoaded = false;
+        }
+
+        // Загрузка сохраненных настроек
+        function loadSavedSettings() {
+            // Громкость
+            const savedVolume = localStorage.getItem('volume') || 1;
+            video.volume = parseFloat(savedVolume);
+            updateVolumeUI();
+
+            // Скорость
+            const savedSpeed = localStorage.getItem('speed') || 1;
+            video.playbackRate = parseFloat(savedSpeed);
+            document.getElementById('currentSpeed').textContent = savedSpeed + 'x';
+
+            document.querySelectorAll('.speed-option').forEach(option => {
+                option.classList.remove('active');
+                if (option.dataset.speed == savedSpeed) {
+                    option.classList.add('active');
+                }
+            });
+
+            // Повтор
+            const savedLoop = localStorage.getItem('loop') === 'true';
+            video.loop = savedLoop;
+            document.getElementById('loopStatus').textContent = savedLoop ? 'Вкл' : 'Выкл';
+
+            // Автовоспроизведение
+            const savedAutoplay = localStorage.getItem('autoplay') !== 'false';
+            video.autoplay = savedAutoplay;
+            document.getElementById('autoplayStatus').textContent = savedAutoplay ? 'Вкл' : 'Выкл';
+
+            // Соотношение сторон
+            const savedAspect = localStorage.getItem('aspect') || 'auto';
+            changeAspectRatio(savedAspect);
+            document.getElementById('currentAspect').textContent = savedAspect === 'auto' ? 'Авто' :
+                savedAspect === 'contain' ? 'Вписать' :
+                    savedAspect === 'cover' ? 'Заполнить' : savedAspect;
+
+            // Настройки изображения
+            brightness = parseInt(localStorage.getItem('brightness') || 100);
+            contrast = parseInt(localStorage.getItem('contrast') || 100);
+            saturation = parseInt(localStorage.getItem('saturation') || 100);
+
+            updateImageSettings();
+        }
+
+        // Функции управления воспроизведением
+        function togglePlay() {
+            if (!videoLoaded) {
+                showNotification("Пожалуйста, сначала выберите видео");
+                return;
+            }
+
+            if (video.paused) {
+                video.play();
+                playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+            } else {
+                video.pause();
+                playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+            }
+        }
+
+        function skipTime(seconds) {
+            if (!videoLoaded) return;
+
+            video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + seconds));
+            showNotification(seconds > 0 ? `+${seconds} сек` : `${seconds} сек`);
+        }
+
+        function handleVideoEnd() {
+            playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+            if (!video.loop) {
+                video.currentTime = 0;
+            }
+        }
+
+        function handleVideoMetadata() {
+            progress.style.width = '0%';
+            progressHandle.style.left = '0%';
+            timeDisplay.textContent = `${formatTime(0)} / ${formatTime(video.duration)}`;
+
+            // Восстановление позиции воспроизведения
+            const savedTime = localStorage.getItem("videoTime-" + currentVideoUrl);
+            if (savedTime && currentVideoUrl) {
+                video.currentTime = parseFloat(savedTime);
+            }
+        }
+
+        // Функции для прогресс-бара
+        function updateVideoProgress() {
+            if (!isDraggingProgress && video.duration) {
+                const percentage = (video.currentTime / video.duration) * 100;
+                progress.style.width = `${percentage}%`;
+                progressHandle.style.left = `${percentage}%`;
+                timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+
+                // Сохранение позиции воспроизведения
+                if (currentVideoUrl) {
+                    localStorage.setItem("videoTime-" + currentVideoUrl, video.currentTime);
+                }
+            }
+        }
+
+        function updateBufferProgress() {
+            if (video.buffered.length > 0) {
+                const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+                const duration = video.duration;
+                const bufferedPercent = (bufferedEnd / duration) * 100;
+                progressBuffer.style.width = `${bufferedPercent}%`;
+            }
+        }
+
+        function startProgressChange(e) {
+            if (!videoLoaded) return;
+
+            isDraggingProgress = true;
+            updateProgressFromEvent(e);
+            document.body.style.userSelect = 'none';
+        }
+
+        function changeProgress(e) {
+            if (isDraggingProgress) {
+                updateProgressFromEvent(e);
+            }
+        }
+
+        function stopProgressChange() {
+            if (isDraggingProgress) {
+                isDraggingProgress = false;
+                document.body.style.userSelect = '';
+            }
+        }
+
+        function updateProgressFromEvent(e) {
+            const rect = progressContainer.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            const percentage = Math.max(0, Math.min(100, pos * 100));
+
+            progress.style.width = `${percentage}%`;
+            progressHandle.style.left = `${percentage}%`;
+
+            if (video.duration) {
+                video.currentTime = pos * video.duration;
+                timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+            }
+        }
+
+        // Функции для управления громкостью
+        function toggleMute() {
+            video.muted = !video.muted;
+            updateVolumeUI();
+            showNotification(video.muted ? "Звук выключен" : "Звук включен");
+        }
+
+        function startVolumeChange(e) {
+            isDraggingVolume = true;
+            updateVolumeFromEvent(e);
+        }
+
+        function changeVolume(e) {
+            if (isDraggingVolume) {
+                updateVolumeFromEvent(e);
+            }
+        }
+
+        function stopVolumeChange() {
+            isDraggingVolume = false;
+        }
+
+        function updateVolumeFromEvent(e) {
+            const rect = volumeSlider.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            const volume = Math.max(0, Math.min(1, pos));
+
+            video.volume = volume;
+            video.muted = false;
+            localStorage.setItem('volume', volume);
+
+            updateVolumeUI();
+            showNotification(`Громкость: ${Math.round(volume * 100)}%`);
+        }
+
+        function updateVolumeUI() {
+            const effectiveVolume = video.muted ? 0 : video.volume;
+            volumeLevel.style.width = `${effectiveVolume * 100}%`;
+
+            // Обновление иконки громкости
+            if (video.muted || effectiveVolume === 0) {
+                volumeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"></path></svg>';
+            } else if (effectiveVolume < 0.5) {
+                volumeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M7 9v6h4l5 5V4l-5 5H7z"></path></svg>';
+            } else {
+                volumeBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4l-5 5H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg>';
+            }
+        }
+
+        // Функции для настроек изображения
+        function startBrightnessChange(e) {
+            isDraggingBrightness = true;
+            updateBrightnessFromEvent(e);
+        }
+
+        function startContrastChange(e) {
+            isDraggingContrast = true;
+            updateContrastFromEvent(e);
+        }
+
+        function startSaturationChange(e) {
+            isDraggingSaturation = true;
+            updateSaturationFromEvent(e);
+        }
+
+        function changeImageSettings(e) {
+            if (isDraggingBrightness) {
+                updateBrightnessFromEvent(e);
+            }
+            if (isDraggingContrast) {
+                updateContrastFromEvent(e);
+            }
+            if (isDraggingSaturation) {
+                updateSaturationFromEvent(e);
+            }
+        }
+
+        function stopImageSettingsChange() {
+            isDraggingBrightness = false;
+            isDraggingContrast = false;
+            isDraggingSaturation = false;
+        }
+
+        function updateBrightnessFromEvent(e) {
+            const rect = brightnessSlider.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            brightness = Math.max(0, Math.min(200, Math.round(pos * 200)));
+
+            updateImageSettings();
+            document.getElementById('brightnessValue').textContent = `${brightness}%`;
+            document.getElementById('brightnessLevel').style.width = `${brightness / 2}%`;
+            document.getElementById('brightnessHandle').style.left = `${brightness / 2}%`;
+
+            localStorage.setItem('brightness', brightness);
+        }
+
+        function updateContrastFromEvent(e) {
+            const rect = contrastSlider.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            contrast = Math.max(0, Math.min(200, Math.round(pos * 200)));
+
+            updateImageSettings();
+            document.getElementById('contrastValue').textContent = `${contrast}%`;
+            document.getElementById('contrastLevel').style.width = `${contrast / 2}%`;
+            document.getElementById('contrastHandle').style.left = `${contrast / 2}%`;
+
+            localStorage.setItem('contrast', contrast);
+        }
+
+        function updateSaturationFromEvent(e) {
+            const rect = saturationSlider.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            saturation = Math.max(0, Math.min(200, Math.round(pos * 200)));
+
+            updateImageSettings();
+            document.getElementById('saturationValue').textContent = `${saturation}%`;
+            document.getElementById('saturationLevel').style.width = `${saturation / 2}%`;
+            document.getElementById('saturationHandle').style.left = `${saturation / 2}%`;
+
+            localStorage.setItem('saturation', saturation);
+        }
+
+        function updateImageSettings() {
+            video.style.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+
+            // Обновление UI слайдеров
+            document.getElementById('brightnessValue').textContent = `${brightness}%`;
+            document.getElementById('brightnessLevel').style.width = `${brightness / 2}%`;
+            document.getElementById('brightnessHandle').style.left = `${brightness / 2}%`;
+
+            document.getElementById('contrastValue').textContent = `${contrast}%`;
+            document.getElementById('contrastLevel').style.width = `${contrast / 2}%`;
+            document.getElementById('contrastHandle').style.left = `${contrast / 2}%`;
+
+            document.getElementById('saturationValue').textContent = `${saturation}%`;
+            document.getElementById('saturationLevel').style.width = `${saturation / 2}%`;
+            document.getElementById('saturationHandle').style.left = `${saturation / 2}%`;
+        }
+
+        // Функции для настроек
+        function toggleSettings() {
+            isSettingsOpen = !isSettingsOpen;
+            settingsPanel.classList.toggle('active', isSettingsOpen);
+
+            // Закрыть подменю при открытии/закрытии настроек
+            speedOptions.classList.remove('active');
+            qualityOptions.classList.remove('active');
+            aspectOptions.classList.remove('active');
+            audioTrackOptions.classList.remove('active');
+        }
+
+        function closeSettingsPanel() {
+            isSettingsOpen = false;
+            settingsPanel.classList.remove('active');
+            speedOptions.classList.remove('active');
+            qualityOptions.classList.remove('active');
+            aspectOptions.classList.remove('active');
+            audioTrackOptions.classList.remove('active');
+        }
+
+        function handleOutsideClick(e) {
+            if (isSettingsOpen &&
+                !settingsPanel.contains(e.target) &&
+                e.target !== settingsBtn &&
+                !settingsBtn.contains(e.target)) {
+                closeSettingsPanel();
+            }
+        }
+
+        function toggleSpeedOptions() {
+            speedOptions.classList.toggle('active');
+            qualityOptions.classList.remove('active');
+            aspectOptions.classList.remove('active');
+            audioTrackOptions.classList.remove('active');
+        }
+
+        function toggleQualityOptions() {
+            qualityOptions.classList.toggle('active');
+            speedOptions.classList.remove('active');
+            aspectOptions.classList.remove('active');
+            audioTrackOptions.classList.remove('active');
+        }
+
+        function toggleAspectOptions() {
+            aspectOptions.classList.toggle('active');
+            speedOptions.classList.remove('active');
+            qualityOptions.classList.remove('active');
+            audioTrackOptions.classList.remove('active');
+        }
+
+        function toggleAudioTrackOptions() {
+            audioTrackOptions.classList.toggle('active');
+            speedOptions.classList.remove('active');
+            qualityOptions.classList.remove('active');
+            aspectOptions.classList.remove('active');
+        }
+
+        function changeSpeed(e) {
+            const speed = parseFloat(e.target.dataset.speed);
+            video.playbackRate = speed;
+            document.getElementById('currentSpeed').textContent = speed + 'x';
+
+            document.querySelectorAll('.speed-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            e.target.classList.add('active');
+
+            localStorage.setItem('speed', speed);
+            speedOptions.classList.remove('active');
+            showNotification(`Скорость: ${speed}x`);
+        }
+
+        function changeQuality(e) {
+            const quality = e.target.dataset.quality;
+            document.getElementById('currentQuality').textContent = quality === 'auto' ? 'Авто' : quality;
+
+            document.querySelectorAll('.quality-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            e.target.classList.add('active');
+
+            // Здесь можно добавить логику изменения качества видео
+            // Для локальных файлов это не применимо, но для стриминга можно реализовать
+
+            qualityOptions.classList.remove('active');
+            showNotification(`Качество: ${quality === 'auto' ? 'Авто' : quality}`);
+        }
+
+        function changeAspect(e) {
+            const aspect = e.target.dataset.aspect;
+            document.getElementById('currentAspect').textContent = aspect === 'auto' ? 'Авто' :
+                aspect === 'contain' ? 'Вписать' :
+                    aspect === 'cover' ? 'Заполнить' : aspect;
+
+            document.querySelectorAll('.aspect-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            e.target.classList.add('active');
+
+            changeAspectRatio(aspect);
+            aspectOptions.classList.remove('active');
+
+            localStorage.setItem('aspect', aspect);
+            showNotification(`Соотношение: ${aspect === 'auto' ? 'Авто' :
+                aspect === 'contain' ? 'Вписать' :
+                    aspect === 'cover' ? 'Заполнить' : aspect}`);
+        }
+
+        function changeAspectRatio(aspect) {
+            if (aspect === 'auto' || aspect === 'contain') {
+                video.style.objectFit = 'contain';
+            } else if (aspect === 'cover') {
+                video.style.objectFit = 'cover';
+            } else if (aspect === '16:9') {
+                video.style.objectFit = 'contain';
+                // Дополнительная логика для 16:9
+            } else if (aspect === '4:3') {
+                video.style.objectFit = 'contain';
+                // Дополнительная логика для 4:3
+            }
+        }
+
+        function changeAudioTrack(e) {
+            const track = e.target.dataset.track;
+            document.getElementById('currentAudioTrack').textContent = track === 'default' ? 'По умолчанию' : track;
+
+            document.querySelectorAll('.audio-track-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            e.target.classList.add('active');
+
+            // Здесь можно добавить логику изменения аудиодорожки
+            // Для простых видео это не применимо, но для видео с несколькими дорожками можно реализовать
+
+            audioTrackOptions.classList.remove('active');
+            showNotification(`Аудиодорожка: ${track === 'default' ? 'По умолчанию' : track}`);
+        }
+
+        function toggleLoop() {
+            video.loop = !video.loop;
+            document.getElementById('loopStatus').textContent = video.loop ? 'Вкл' : 'Выкл';
+            localStorage.setItem('loop', video.loop);
+            showNotification(`Повтор: ${video.loop ? 'Включен' : 'Выключен'}`);
+        }
+
+        function toggleAutoplay() {
+            video.autoplay = !video.autoplay;
+            document.getElementById('autoplayStatus').textContent = video.autoplay ? 'Вкл' : 'Выкл';
+            localStorage.setItem('autoplay', video.autoplay);
+            showNotification(`Автовоспроизведение: ${video.autoplay ? 'Включено' : 'Выключено'}`);
+        }
+
+        function toggleSubtitles() {
+            const subtitlesEnabled = document.getElementById('subtitlesStatus').textContent === 'Вкл';
+            document.getElementById('subtitlesStatus').textContent = subtitlesEnabled ? 'Выкл' : 'Вкл';
+
+            // Здесь можно добавить логику включения/выключения субтитров
+            // Для демонстрации просто переключаем статус
+
+            showNotification(`Субтитры: ${subtitlesEnabled ? 'Выключены' : 'Включены'}`);
+        }
+
+        // Функция для режима "картинка в картинке"
+        function togglePictureInPicture() {
+            if (!videoLoaded) {
+                showNotification("Пожалуйста, сначала выберите видео");
+                return;
+            }
+
+            // Проверяем, загружены ли метаданные видео
+            if (video.readyState < 1) {
+                showNotification("Подождите, видео загружается");
+                return;
+            }
+
+            if (document.pictureInPictureElement) {
+                document.exitPictureInPicture()
+                    .then(() => showNotification("Режим PiP выключен"))
+                    .catch(error => {
+                        console.error("Ошибка при выходе из режима PiP:", error);
+                        showNotification("Ошибка при выключении режима PiP");
+                    });
+            } else {
+                if (document.pictureInPictureEnabled) {
+                    // Проверяем, что метаданные видео загружены
+                    if (video.readyState >= 1) {
+                        video.requestPictureInPicture()
+                            .then(() => showNotification("Режим PiP включен"))
+                            .catch(error => {
+                                console.error("Ошибка при входе в режим PiP:", error);
+                                showNotification("Ошибка при включении режима PiP");
+                            });
+                    } else {
+                        showNotification("Подождите, видео загружается");
+                    }
+                } else {
+                    showNotification("Режим PiP не поддерживается вашим браузером");
+                }
+            }
+        }
+
+        // Функции для полноэкранного режима
+        function toggleFullscreen() {
+            const videoContainer = document.getElementById('videoContainer');
+
+            if (!document.fullscreenElement) {
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.webkitRequestFullscreen) {
+                    videoContainer.webkitRequestFullscreen();
+                } else if (videoContainer.msRequestFullscreen) {
+                    videoContainer.msRequestFullscreen();
+                }
+
+                fullscreenBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"></path></svg>';
+                showNotification("Полноэкранный режим включен");
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+
+                fullscreenBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"></path></svg>';
+                showNotification("Полноэкранный режим выключен");
+            }
+        }
+
+        // Функции для выбора источника видео
+        function changeVideoSource(e) {
+            const sourceType = e.currentTarget.dataset.source;
+
+            sourceOptions.forEach(option => {
+                option.classList.remove('active');
+            });
+            e.currentTarget.classList.add('active');
+
+            sourceInputs.forEach(input => {
+                input.classList.remove('active');
+            });
+
+            document.querySelector(`.source-inputs[data-input="${sourceType}"]`).classList.add('active');
+        }
+
+        function loadVideoFromUrl() {
+            const url = videoUrlInput.value.trim();
+
+            if (!url) {
+                showNotification("Пожалуйста, введите URL видео");
+                return;
+            }
+
+            try {
+                // Проверка валидности URL
+                let videoUrl = url;
+
+                // Если URL не начинается с http:// или https://, добавляем https://
+                if (!url.match(/^https?:\/\//i)) {
+                    videoUrl = 'https://' + url;
+                }
+
+                // Показываем спиннер загрузки
+                spinner.style.display = 'block';
+
+                // Устанавливаем обработчик для проверки загрузки
+                const checkVideoLoaded = function () {
+                    if (video.readyState >= 2) { // HAVE_CURRENT_DATA или выше
+                        videoLoaded = true;
+                        spinner.style.display = 'none';
+                        showNotification("Видео загружено");
+
+                        // Сохранение в историю
+                        saveVideoToHistory(videoUrl, "URL");
+
+                        // Автовоспроизведение
+                        if (video.autoplay) {
+                            video.play()
+                                .then(() => {
+                                    playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+                                })
+                                .catch(error => {
+                                    console.error("Автовоспроизведение не удалось:", error);
+                                    showNotification("Автовоспроизведение не удалось");
+                                });
+                        }
+
+                        // Удаляем обработчик после успешной загрузки
+                        video.removeEventListener('loadeddata', checkVideoLoaded);
+                    }
+                };
+
+                // Добавляем обработчик для проверки загрузки
+                video.addEventListener('loadeddata', checkVideoLoaded);
+
+                // Устанавливаем таймаут для проверки загрузки
+                const loadTimeout = setTimeout(() => {
+                    if (!videoLoaded) {
+                        video.removeEventListener('loadeddata', checkVideoLoaded);
+                        spinner.style.display = 'none';
+                        showNotification(`Не удалось загрузить видео. Проверьте URL ${error}`);
+                    }
+                }, 10000); // 10 секунд таймаут
+
+                // Устанавливаем обработчик ошибки
+                const handleError = function () {
+                    clearTimeout(loadTimeout);
+                    video.removeEventListener('loadeddata', checkVideoLoaded);
+                    video.removeEventListener('error', handleError);
+                    spinner.style.display = 'none';
+                    showNotification("Ошибка при загрузке видео. Проверьте URL");
+                };
+
+                video.addEventListener('error', handleError);
+
+                // Загрузка видео
+                video.src = videoUrl;
+                currentVideoUrl = videoUrl;
+
+            } catch (e) {
+                spinner.style.display = 'none';
+                showNotification("Пожалуйста, введите корректный URL видео");
+            }
+        }
+
+        function handleFileDrop(e) {
+            e.preventDefault();
+            fileInputContainer.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            fileInputContainer.style.background = 'transparent';
+
+            if (e.dataTransfer.items) {
+                for (let i = 0; i < e.dataTransfer.items.length; i++) {
+                    if (e.dataTransfer.items[i].kind === 'file') {
+                        const file = e.dataTransfer.items[i].getAsFile();
+                        loadVideoFile(file);
+                        break;
+                    }
+                }
+            } else {
+                if (e.dataTransfer.files.length > 0) {
+                    loadVideoFile(e.dataTransfer.files[0]);
+                }
+            }
+        }
+
+        function handleFileSelect(e) {
+            if (e.target.files.length > 0) {
+                loadVideoFile(e.target.files[0]);
+            }
+        }
+
+        function loadVideoFile(file) {
+            if (!file.type.startsWith('video/')) {
+                showNotification("Пожалуйста, выберите видео файл");
+                return;
+            }
+
+            const fileURL = URL.createObjectURL(file);
+            video.src = fileURL;
+            currentVideoUrl = file.name; // Используем имя файла как идентификатор
+            videoLoaded = true;
+
+            // Сохранение в историю
+            saveVideoToHistory(file.name, "Файл");
+
+            // Автовоспроизведение
+            if (video.autoplay) {
+                video.play()
+                    .then(() => {
+                        playPauseBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+                    })
+                    .catch(error => {
+                        console.error("Автовоспроизведение не удалось:", error);
+                        showNotification("Автовоспроизведение не удалось");
+                    });
+            }
+
+            showNotification(`Файл загружен: ${file.name}`);
+        }
+
+        // Сохранение истории просмотров
+        function saveVideoToHistory(videoId, type) {
+            let history = JSON.parse(localStorage.getItem('videoHistory') || '[]');
+
+            // Проверка на дубликаты
+            const existingIndex = history.findIndex(item => item.id === videoId);
+            if (existingIndex !== -1) {
+                history.splice(existingIndex, 1);
+            }
+
+            // Добавление в начало истории
+            history.unshift({
+                id: videoId,
+                type: type,
+                date: new Date().toISOString()
+            });
+
+            // Ограничение размера истории
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+
+            localStorage.setItem('videoHistory', JSON.stringify(history));
+        }
+
+        // Функция для отображения уведомлений
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('active');
+
+            setTimeout(() => {
+                notification.classList.remove('active');
+            }, 2000);
+        }
+
+        // Обработка клавиатурных сокращений
+        function handleKeyboardShortcuts(e) {
+            if (!videoLoaded) return;
+
+            switch (e.key.toLowerCase()) {
+                case ' ':
+                    e.preventDefault();
+                    togglePlay();
+                    break;
+                case 'arrowright':
+                    e.preventDefault();
+                    skipTime(10);
+                    break;
+                case 'arrowleft':
+                    e.preventDefault();
+                    skipTime(-10);
+                    break;
+                case 'arrowup':
+                    e.preventDefault();
+                    video.volume = Math.min(1, video.volume + 0.1);
+                    video.muted = false;
+                    localStorage.setItem('volume', video.volume);
+                    updateVolumeUI();
+                    showNotification(`Громкость: ${Math.round(video.volume * 100)}%`);
+                    break;
+                case 'arrowdown':
+                    e.preventDefault();
+                    video.volume = Math.max(0, video.volume - 0.1);
+                    localStorage.setItem('volume', video.volume);
+                    updateVolumeUI();
+                    showNotification(`Громкость: ${Math.round(video.volume * 100)}%`);
+                    break;
+                case 'f':
+                    e.preventDefault();
+                    toggleFullscreen();
+                    break;
+                case 'm':
+                    e.preventDefault();
+                    toggleMute();
+                    break;
+                case 'p':
+                    e.preventDefault();
+                    togglePictureInPicture();
+                    break;
+                case 'escape':
+                    if (isSettingsOpen) {
+                        closeSettingsPanel();
+                    }
+                    break;
+            }
+        }
+
+        // Форматирование времени
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor(seconds % 3600 / 60);
+            const s = Math.floor(seconds % 60);
+
+            return h > 0
+                ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+                : `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        // Обработка нажатия Enter в форме логина
+        document.getElementById("password").addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                authenticate();
+            }
+        });
+    </script>
+</body>
+
+</html>
